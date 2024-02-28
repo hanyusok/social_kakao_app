@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:developer';
+
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
@@ -14,10 +15,11 @@ class _LoginScreenState extends State<LoginScreen> {
   /* 카카오 로그인*/
   Future<void> loginAsKakao() async {
     // 카카오톡 실행 가능 여부 확인
-// 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
+    // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
     if (await isKakaoTalkInstalled()) {
       try {
         await UserApi.instance.loginWithKakaoTalk();
+
         log('카카오톡으로 로그인 성공');
       } catch (error) {
         log('카카오톡으로 로그인 실패 $error');
@@ -30,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
         try {
           await UserApi.instance.loginWithKakaoAccount();
+
           log('카카오계정으로 로그인 성공');
         } catch (error) {
           log('카카오계정으로 로그인 실패 $error');
@@ -38,6 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       try {
         await UserApi.instance.loginWithKakaoAccount();
+
         log('카카오계정으로 로그인 성공');
       } catch (error) {
         log('카카오계정으로 로그인 실패 $error');
@@ -57,10 +61,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    /* move to homeScreen after login */
-    Future<void> moveToHome() async {
-      //
-    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('로그인'),
