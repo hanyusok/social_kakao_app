@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:social_kakao_app/screens/home_screen.dart';
+// import 'package:social_kakao_app/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,27 +13,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late bool isLogged = false;
+  // late bool isKakaoLogged = false;
 
   @override
   void initState() {
     super.initState();
-  }
-
-  Future<bool> checkToken() async {
-    try {
-      AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
-      log('토큰 유효성 체크 성공 ${tokenInfo.id} ${tokenInfo.expiresIn}');
-      return true;
-    } catch (e) {
-      if (e is KakaoException && e.isInvalidTokenError()) {
-        log('토큰 만료 $e');
-        return false;
-      } else {
-        log('토큰 정보 조회 실패 $e');
-        return false;
-      }
-    }
   }
 
   /* 카카오 로그인*/
@@ -43,6 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (await isKakaoTalkInstalled()) {
       try {
         await UserApi.instance.loginWithKakaoTalk();
+        // isKakaoLogged = true;
 
         log('카카오톡으로 로그인 성공');
       } catch (error) {
@@ -56,6 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
         try {
           await UserApi.instance.loginWithKakaoAccount();
+          // isKakaoLogged = true;
 
           log('카카오계정으로 로그인 성공');
         } catch (error) {
@@ -65,6 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       try {
         await UserApi.instance.loginWithKakaoAccount();
+        // isKakaoLogged = true;
 
         log('카카오계정으로 로그인 성공');
       } catch (error) {
@@ -85,25 +72,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return checkToken()
-        ? const HomeScreen()
-        : Scaffold(
-            appBar: AppBar(
-              title: const Text('로그인'),
-              centerTitle: true,
-            ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                    onPressed: loginAsKakao, child: const Text('카카오로그인')),
-                const SizedBox(
-                  height: 40,
-                ),
-                ElevatedButton(
-                    onPressed: logoutAskakao, child: const Text('카카오로그아웃'))
-              ],
-            ),
-          );
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('로그인'),
+        centerTitle: true,
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(onPressed: loginAsKakao, child: const Text('카카오로그인')),
+          const SizedBox(
+            height: 40,
+          ),
+          ElevatedButton(onPressed: logoutAskakao, child: const Text('카카오로그아웃'))
+        ],
+      ),
+    );
   }
 }
