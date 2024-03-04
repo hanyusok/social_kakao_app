@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:social_kakao_app/screens/home_screen.dart';
 // import 'package:social_kakao_app/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,11 +14,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // late bool isKakaoLogged = false;
-
   @override
   void initState() {
     super.initState();
+  }
+
+  /* navigate to homepage */
+  void navigateHome() {
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
 
   /* 카카오 로그인*/
@@ -26,8 +31,10 @@ class _LoginScreenState extends State<LoginScreen> {
     // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
     if (await isKakaoTalkInstalled()) {
       try {
-        await UserApi.instance.loginWithKakaoTalk();
-        // isKakaoLogged = true;
+        await UserApi.instance.loginWithKakaoTalk().then((value) {
+          log('$value');
+          navigateHome();
+        });
 
         log('카카오톡으로 로그인 성공');
       } catch (error) {
@@ -40,8 +47,10 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
         try {
-          await UserApi.instance.loginWithKakaoAccount();
-          // isKakaoLogged = true;
+          await UserApi.instance.loginWithKakaoAccount().then((value) {
+            log('$value');
+            navigateHome();
+          });
 
           log('카카오계정으로 로그인 성공');
         } catch (error) {
@@ -50,8 +59,10 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } else {
       try {
-        await UserApi.instance.loginWithKakaoAccount();
-        // isKakaoLogged = true;
+        await UserApi.instance.loginWithKakaoAccount().then((value) {
+          log('$value');
+          navigateHome();
+        });
 
         log('카카오계정으로 로그인 성공');
       } catch (error) {
@@ -61,14 +72,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   /* 카카오 로그아웃*/
-  Future<void> logoutAskakao() async {
-    try {
-      await UserApi.instance.logout();
-      log('로그아웃 성공, SDK에서 토큰 삭제');
-    } catch (error) {
-      log('로그아웃 실패, SDK에서 토큰 삭제 $error');
-    }
-  }
+  // Future<void> logoutAskakao() async {
+  //   try {
+  //     await UserApi.instance.logout();
+  //     log('로그아웃 성공, SDK에서 토큰 삭제');
+  //   } catch (error) {
+  //     log('로그아웃 실패, SDK에서 토큰 삭제 $error');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(
             height: 40,
           ),
-          ElevatedButton(onPressed: logoutAskakao, child: const Text('카카오로그아웃'))
+          // ElevatedButton(onPressed: logoutAskakao, child: const Text('카카오로그아웃'))
         ],
       ),
     );
