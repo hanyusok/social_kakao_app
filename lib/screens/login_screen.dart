@@ -1,9 +1,11 @@
 import 'dart:developer';
 // import 'dart:html';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 import 'package:social_kakao_app/screens/home_screen.dart';
 // import 'package:social_kakao_app/screens/home_screen.dart';
 
@@ -15,9 +17,17 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final fb.FirebaseAuth _auth = fb.FirebaseAuth.instance;
+  // final fb.User? _user;
   @override
   void initState() {
     super.initState();
+    _auth.authStateChanges();
+    // .listen((event) {
+    //   setState(() {
+    //     _user = event;
+    //   });
+    // });
   }
 
   /* navigate to homepage */
@@ -32,18 +42,13 @@ class _LoginScreenState extends State<LoginScreen> {
     // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
     if (await isKakaoTalkInstalled()) {
       try {
-        // await UserApi.instance.loginWithKakaoTalk().then((value) {
-        //   log('$value');
-        //   navigateHome();
         OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
         log('카카오톡으로 로그인 성공');
         /* firebase Auth login ID token*/
-        final provider = OAuthProvider('oidc.socialkakao');
+        final provider = fb.OAuthProvider('oidc.socialkakao');
         final credential = provider.credential(
             idToken: token.idToken, accessToken: token.accessToken);
-        FirebaseAuth.instance
-            .signInWithCredential(credential)
-            .then((_) => navigateHome());
+        _auth.signInWithCredential(credential).then((_) => navigateHome());
         log('firebase 로그인 성공');
         // });
       } catch (error) {
@@ -56,20 +61,13 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
         try {
-          // await UserApi.instance.loginWithKakaoAccount().then((value) {
-          //   log('$value');
-          //   navigateHome();
-          // });
-
           OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
           log('카카오계정으로 로그인 성공');
           /* firebase Auth login ID token*/
-          final provider = OAuthProvider('oidc.socialkakao');
+          final provider = fb.OAuthProvider('oidc.socialkakao');
           final credential = provider.credential(
               idToken: token.idToken, accessToken: token.accessToken);
-          FirebaseAuth.instance
-              .signInWithCredential(credential)
-              .then((_) => navigateHome());
+          _auth.signInWithCredential(credential).then((_) => navigateHome());
 
           log('firebase 로그인 성공');
         } catch (error) {
@@ -78,19 +76,13 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } else {
       try {
-        // await UserApi.instance.loginWithKakaoAccount().then((value) {
-        //   log('$value');
-        //   navigateHome();
-        // });
         OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
         log('카카오계정으로 로그인 성공');
         /* firebase Auth login ID token*/
-        final provider = OAuthProvider('oidc.socialkakao');
+        final provider = fb.OAuthProvider('oidc.socialkakao');
         final credential = provider.credential(
             idToken: token.idToken, accessToken: token.accessToken);
-        FirebaseAuth.instance
-            .signInWithCredential(credential)
-            .then((_) => navigateHome());
+        _auth.signInWithCredential(credential).then((_) => navigateHome());
 
         log('firebase 로그인 성공');
       } catch (error) {
@@ -99,15 +91,24 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  /* 카카오 로그아웃*/
-  // Future<void> logoutAskakao() async {
-  //   try {
-  //     await UserApi.instance.logout();
-  //     log('로그아웃 성공, SDK에서 토큰 삭제');
-  //   } catch (error) {
-  //     log('로그아웃 실패, SDK에서 토큰 삭제 $error');
-  //   }
-  // }
+  /* Google sign in*/
+  Future<void> loginAsGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+      final googleCredential = fb.GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      await _auth.signInWithCredential(googleCredential).then((value) {
+        log('$value');
+        navigateHome();
+      });
+    } catch (e) {
+      //
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +124,9 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(
             height: 40,
           ),
-          // ElevatedButton(onPressed: logoutAskakao, child: const Text('카카오로그아웃'))
+          // ElevatedButton(
+          //     onPressed: loginAsGoogle, child: const Text('Google Sign')),
+          SignInButton(Buttons.google, onPressed: loginAsGoogle)
         ],
       ),
     );

@@ -12,7 +12,20 @@
           "package_name": "com.example.social_kakao_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "223380536583-mfi72id23aoqh83pqnl57rvmtou9egb9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.social_kakao_app",
+            "certificate_hash": "2a43687cc670061851462f85233402a88dc73ccb"
+          }
+        },
+        {
+          "client_id": "223380536583-e6sr2ihspbl481esn4nohsbsbd0hiecq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBbHGFhfaDj_pm1TIuNdhVz4U9ID1F3u70"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "223380536583-e6sr2ihspbl481esn4nohsbsbd0hiecq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "223380536583-43kgifp31skpulsjt62u79i3nil2gj26.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.socialKakaoApp"
+              }
+            }
+          ]
         }
       }
     }

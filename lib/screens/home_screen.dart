@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:social_kakao_app/screens/login_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,6 +12,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final fb.FirebaseAuth _auth = fb.FirebaseAuth.instance;
+  fb.User? _user;
+  @override
+  void initState() {
+    super.initState();
+    _auth.authStateChanges().listen((event) {
+      setState(() {
+        _user = event;
+      });
+    });
+  }
+
   /* navigate to loginpage */
   void navigateLogin() {
     Navigator.of(context).pushReplacement(
@@ -19,12 +31,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /* 카카오 로그아웃*/
-  Future<void> logoutAskakao() async {
+  Future<void> logoutAsSns() async {
     try {
       await UserApi.instance.logout().then((value) {
         log('$value');
         /* firebase logout*/
-        FirebaseAuth.instance.signOut();
+        fb.FirebaseAuth.instance.signOut();
         log('firebase 로그아웃!');
         navigateLogin();
       });
@@ -32,6 +44,9 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (error) {
       log('로그아웃 실패, SDK에서 토큰 삭제 $error');
     }
+    fb.FirebaseAuth.instance.signOut();
+    log('firebase 로그아웃!');
+    navigateLogin();
   }
 
   @override
@@ -44,14 +59,14 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Text('내용'),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(_user!.displayName ?? '기본'),
           ),
           const SizedBox(
             height: 40,
           ),
-          ElevatedButton(onPressed: logoutAskakao, child: const Text('카카오로그아웃'))
+          ElevatedButton(onPressed: logoutAsSns, child: const Text('로그아웃'))
         ],
       ),
     );
