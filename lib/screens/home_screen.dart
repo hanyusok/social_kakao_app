@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:social_kakao_app/screens/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +23,9 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       await UserApi.instance.logout().then((value) {
         log('$value');
+        /* firebase logout*/
+        FirebaseAuth.instance.signOut();
+        log('firebase 로그아웃!');
         navigateLogin();
       });
       log('로그아웃 성공, SDK에서 토큰 삭제');

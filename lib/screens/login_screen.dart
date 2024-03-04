@@ -1,5 +1,6 @@
 import 'dart:developer';
-
+// import 'dart:html';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -31,12 +32,20 @@ class _LoginScreenState extends State<LoginScreen> {
     // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
     if (await isKakaoTalkInstalled()) {
       try {
-        await UserApi.instance.loginWithKakaoTalk().then((value) {
-          log('$value');
-          navigateHome();
-        });
-
+        // await UserApi.instance.loginWithKakaoTalk().then((value) {
+        //   log('$value');
+        //   navigateHome();
+        OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
         log('카카오톡으로 로그인 성공');
+        /* firebase Auth login ID token*/
+        final provider = OAuthProvider('oidc.socialkakao');
+        final credential = provider.credential(
+            idToken: token.idToken, accessToken: token.accessToken);
+        FirebaseAuth.instance
+            .signInWithCredential(credential)
+            .then((_) => navigateHome());
+        log('firebase 로그인 성공');
+        // });
       } catch (error) {
         log('카카오톡으로 로그인 실패 $error');
 
@@ -47,24 +56,43 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
         try {
-          await UserApi.instance.loginWithKakaoAccount().then((value) {
-            log('$value');
-            navigateHome();
-          });
+          // await UserApi.instance.loginWithKakaoAccount().then((value) {
+          //   log('$value');
+          //   navigateHome();
+          // });
 
+          OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
           log('카카오계정으로 로그인 성공');
+          /* firebase Auth login ID token*/
+          final provider = OAuthProvider('oidc.socialkakao');
+          final credential = provider.credential(
+              idToken: token.idToken, accessToken: token.accessToken);
+          FirebaseAuth.instance
+              .signInWithCredential(credential)
+              .then((_) => navigateHome());
+
+          log('firebase 로그인 성공');
         } catch (error) {
           log('카카오계정으로 로그인 실패 $error');
         }
       }
     } else {
       try {
-        await UserApi.instance.loginWithKakaoAccount().then((value) {
-          log('$value');
-          navigateHome();
-        });
-
+        // await UserApi.instance.loginWithKakaoAccount().then((value) {
+        //   log('$value');
+        //   navigateHome();
+        // });
+        OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
         log('카카오계정으로 로그인 성공');
+        /* firebase Auth login ID token*/
+        final provider = OAuthProvider('oidc.socialkakao');
+        final credential = provider.credential(
+            idToken: token.idToken, accessToken: token.accessToken);
+        FirebaseAuth.instance
+            .signInWithCredential(credential)
+            .then((_) => navigateHome());
+
+        log('firebase 로그인 성공');
       } catch (error) {
         log('카카오계정으로 로그인 실패 $error');
       }
