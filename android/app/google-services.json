@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "223380536583-o20qqc8o4aiqkon2r2tjjqsm2ekroqk3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.social_kakao_app",
+            "certificate_hash": "47bdf365229d0a7ac82c515abc73444b05a3b17e"
+          }
+        },
+        {
           "client_id": "223380536583-e6sr2ihspbl481esn4nohsbsbd0hiecq.apps.googleusercontent.com",
           "client_type": 3
         }
